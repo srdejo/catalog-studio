@@ -40,6 +40,14 @@ protocol.registerSchemesAsPrivileged([
 // consistente con el `file:../../data/catalog.db` de Prisma.
 const IMAGES_DIR = path.resolve(__dirname, '../../../../data/images');
 
+// Prisma resuelve DATABASE_URL leyendo `schemaEnvPath`, una ruta relativa
+// grabada en el cliente generado en la máquina de desarrollo — al empaquetar
+// la app esa ruta ya no existe y la variable queda vacía. Se fija aquí a
+// mano con la misma resolución que IMAGES_DIR (dev: raíz del monorepo,
+// producción: resources/, donde extraResources copia data/).
+const DATABASE_PATH = path.resolve(__dirname, '../../../../data/catalog.db');
+process.env.DATABASE_URL = `file:${DATABASE_PATH}`;
+
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
 
 // __dirname es dist-electron/main tanto en dev como en producción
