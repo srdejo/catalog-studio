@@ -1,0 +1,24 @@
+appId: com.catalogstudio.app
+productName: Catalog Studio
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**
+  - dist-electron/**
+  - package.json
+extraResources:
+  - from: ../../data
+    to: data
+    filter:
+      - '!catalog.db'
+      - '!images/**'
+win:
+  target: nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+mac:
+  target: dmg
+linux:
+  target: AppImage

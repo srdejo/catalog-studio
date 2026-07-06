@@ -1,0 +1,37 @@
+{
+  "name": "@catalog-studio/desktop",
+  "private": true,
+  "version": "0.1.0",
+  "main": "dist-electron/main/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p renderer/tsconfig.json && vite build && electron-builder"
+  },
+  "dependencies": {
+    "@catalog-studio/application": "*",
+    "@catalog-studio/domain": "*",
+    "@catalog-studio/infrastructure": "*",
+    "@catalog-studio/shared": "*",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.454.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.10",
+    "vite-plugin-electron": "^0.29.0",
+    "vite-plugin-electron-renderer": "^0.14.6"
+  }
+}

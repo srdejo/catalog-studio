@@ -1,0 +1,13 @@
+{
+  "name": "@catalog-studio/application",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@catalog-studio/catalog-template": "*",
+    "@catalog-studio/domain": "*",
+    "@catalog-studio/shared": "*"
+  }
+}

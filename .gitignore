@@ -1,0 +1,21 @@
+node_modules/
+dist/
+dist-electron/
+release/
+*.log
+
+# Datos locales del usuario — nunca se suben (catálogo, imágenes de producto,
+# portada/header/footer de marca, base de datos). La app los recrea/regenera
+# en tiempo de ejecución; ver README para el flujo de importación.
+data/
+
+# PDFs de catálogos de proveedor sueltos en la raíz (archivos de prueba/reales
+# del usuario, no parte del código fuente).
+/*.pdf
+
+# Prisma
+packages/infrastructure/prisma/dev.db*
+
+.env
+**/.env
+.DS_Store
