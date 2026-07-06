@@ -11,6 +11,8 @@ files:
   - dist/**
   - dist-electron/**
   - build/icon.png
+  - build/catalog.empty.db
+  - build/default-images/**
   - package.json
 # Sin asar: los workspaces npm usan symlinks (packages/* <- node_modules/@catalog-studio/*)
 # que quedan fuera del directorio base del asar, y el motor nativo de Prisma

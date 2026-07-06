@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, protocol, net } from 'electron';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
@@ -36,17 +37,46 @@ protocol.registerSchemesAsPrivileged([
   { scheme: IMAGE_PROTOCOL, privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
 
-// Repo root: apps/desktop/dist-electron/main -> ../../../ = raíz del monorepo,
-// consistente con el `file:../../data/catalog.db` de Prisma.
-const IMAGES_DIR = path.resolve(__dirname, '../../../../data/images');
+let IMAGES_DIR: string;
 
-// Prisma resuelve DATABASE_URL leyendo `schemaEnvPath`, una ruta relativa
-// grabada en el cliente generado en la máquina de desarrollo — al empaquetar
-// la app esa ruta ya no existe y la variable queda vacía. Se fija aquí a
-// mano con la misma resolución que IMAGES_DIR (dev: raíz del monorepo,
-// producción: resources/, donde extraResources copia data/).
-const DATABASE_PATH = path.resolve(__dirname, '../../../../data/catalog.db');
-process.env.DATABASE_URL = `file:${DATABASE_PATH}`;
+if (app.isPackaged) {
+  // La base de datos y las imágenes son datos mutables del usuario: no pueden
+  // vivir junto al ejecutable instalado (con "instalar para todos los
+  // usuarios" esa carpeta queda de solo lectura y SQLite falla con "unable to
+  // open database file"). Van en la carpeta de datos de usuario de Electron,
+  // que siempre es escribible.
+  const userDataDir = app.getPath('userData');
+  IMAGES_DIR = path.join(userDataDir, 'images');
+  const databasePath = path.join(userDataDir, 'catalog.db');
+
+  // Prisma resuelve DATABASE_URL leyendo `schemaEnvPath`, una ruta relativa
+  // grabada en el cliente generado en la máquina de desarrollo — al empaquetar
+  // la app ese .env no viaja con el paquete y la variable queda vacía.
+  process.env.DATABASE_URL = `file:${databasePath}`;
+
+  if (!fs.existsSync(databasePath)) {
+    // Primer arranque: no hay migraciones disponibles en producción (el CLI
+    // de Prisma es una devDependency), así que se parte de una plantilla ya
+    // migrada, generada en build time con `prisma migrate deploy`.
+    const templateDb = path.resolve(__dirname, '../../build/catalog.empty.db');
+    fs.copyFileSync(templateDb, databasePath);
+  }
+
+  if (!fs.existsSync(IMAGES_DIR)) {
+    // header.png/footer.png/cover-base.png son plantillas que
+    // GenerateCatalogService espera encontrar dentro de IMAGES_DIR.
+    const templateImagesDir = path.resolve(__dirname, '../../build/default-images');
+    fs.mkdirSync(IMAGES_DIR, { recursive: true });
+    for (const fileName of fs.readdirSync(templateImagesDir)) {
+      fs.copyFileSync(path.join(templateImagesDir, fileName), path.join(IMAGES_DIR, fileName));
+    }
+  }
+} else {
+  // Repo root: apps/desktop/dist-electron/main -> ../../../../ = raíz del
+  // monorepo. DATABASE_URL en dev la resuelve Prisma solo desde
+  // packages/infrastructure/.env, no hace falta fijarla a mano.
+  IMAGES_DIR = path.resolve(__dirname, '../../../../data/images');
+}
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
 
