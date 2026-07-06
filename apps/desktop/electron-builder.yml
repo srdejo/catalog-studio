@@ -10,13 +10,24 @@ directories:
 files:
   - dist/**
   - dist-electron/**
+  - build/icon.png
   - package.json
+# Sin asar: los workspaces npm usan symlinks (packages/* <- node_modules/@catalog-studio/*)
+# que quedan fuera del directorio base del asar, y el motor nativo de Prisma
+# tampoco puede ejecutarse empaquetado dentro de un asar.
+asar: false
 extraResources:
   - from: ../../data
     to: data
     filter:
       - '!catalog.db'
       - '!images/**'
+  # node_modules/.prisma queda hoisteado en la raíz del monorepo (npm workspaces)
+  # y electron-builder no lo resuelve como parte del árbol de dependencias de
+  # la app, así que hay que copiarlo a mano dentro de resources/app (con asar
+  # desactivado, "app" es la carpeta donde vive el código fuente empaquetado).
+  - from: ../../node_modules/.prisma
+    to: app/node_modules/.prisma
 win:
   target: nsis
 nsis:

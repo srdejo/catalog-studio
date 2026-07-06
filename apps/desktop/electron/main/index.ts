@@ -42,12 +42,17 @@ const IMAGES_DIR = path.resolve(__dirname, '../../../../data/images');
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
 
+// __dirname es dist-electron/main tanto en dev como en producción
+// (vite-plugin-electron compila ahí en los dos casos).
+const APP_ICON = path.resolve(__dirname, '../../build/icon.png');
+
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
+    icon: APP_ICON,
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
