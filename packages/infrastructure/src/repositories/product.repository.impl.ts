@@ -15,6 +15,7 @@ function toDomain(row: ProductRow): Product {
     row.detailPrice,
     row.cost,
     row.stock,
+    row.order,
     row.active,
     row.createdAt,
     row.updatedAt,
@@ -25,7 +26,9 @@ export class PrismaProductRepository implements ProductRepository {
   private readonly prisma = getPrismaClient();
 
   async findAll(): Promise<Product[]> {
-    const rows = await this.prisma.product.findMany({ orderBy: { createdAt: 'desc' } });
+    // Orden manual (no createdAt): el usuario puede reordenar los productos
+    // arrastrando en la pantalla de Productos.
+    const rows = await this.prisma.product.findMany({ orderBy: { order: 'asc' } });
     return rows.map(toDomain);
   }
 
@@ -37,6 +40,11 @@ export class PrismaProductRepository implements ProductRepository {
   async findByCode(code: string): Promise<Product | null> {
     const row = await this.prisma.product.findUnique({ where: { code } });
     return row ? toDomain(row) : null;
+  }
+
+  async findMaxOrder(): Promise<number> {
+    const top = await this.prisma.product.findFirst({ orderBy: { order: 'desc' } });
+    return top?.order ?? 0;
   }
 
   async create(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product> {
@@ -52,6 +60,7 @@ export class PrismaProductRepository implements ProductRepository {
         detailPrice: product.detailPrice,
         cost: product.cost,
         stock: product.stock,
+        order: product.order,
         active: product.active,
       },
     });
@@ -75,6 +84,7 @@ export class PrismaProductRepository implements ProductRepository {
         detailPrice: product.detailPrice,
         cost: product.cost,
         stock: product.stock,
+        order: product.order,
         active: product.active,
       },
     });

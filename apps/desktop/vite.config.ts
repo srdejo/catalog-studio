@@ -24,11 +24,14 @@ export default defineConfig({
               // playwright/playwright-core tienen su propia lógica de lanzamiento de
               // navegador (usa `eval` y resuelve sus binarios descargados en
               // node_modules) — empaquetarlos rompe esa resolución.
+              // sharp tiene un binding nativo (.node) que debe cargarse desde
+              // node_modules en tiempo de ejecución, no empaquetarse.
               external: (id) =>
                 id === '@prisma/client' ||
                 id === 'electron' ||
                 id.startsWith('pdfjs-dist') ||
-                id.startsWith('playwright'),
+                id.startsWith('playwright') ||
+                id === 'sharp',
             },
           },
         },

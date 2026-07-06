@@ -56,7 +56,6 @@ export function ProductsPages({
         <section key={productPage.key} className="page products-page" style={{ pageBreakBefore: 'always' }}>
           <PageHeader
             title={productPage.title}
-            companyName={data.settings.companyName}
             headerImageDataUri={data.headerImageDataUri}
           />
           <div className="page-body">

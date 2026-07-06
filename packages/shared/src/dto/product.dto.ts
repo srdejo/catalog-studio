@@ -15,6 +15,8 @@ export interface ProductDto {
   detailPrice: number | null;
   cost: number;
   stock: number;
+  /** Orden manual fraccionario (ver product.repository.ts). */
+  order: number;
   active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -31,9 +33,17 @@ export const CreateProductSchema = z.object({
   detailPrice: z.number().nonnegative().nullable().optional(),
   cost: z.number().nonnegative(),
   stock: z.number().int().nonnegative().optional(),
+  order: z.number().optional(),
   active: z.boolean().optional(),
 });
 export type CreateProductDto = z.infer<typeof CreateProductSchema>;
 
 export const UpdateProductSchema = CreateProductSchema.partial();
 export type UpdateProductDto = z.infer<typeof UpdateProductSchema>;
+
+export const ReorderProductSchema = z.object({
+  id: z.string().min(1),
+  /** Nuevo valor de `order` (calculado en el cliente como el promedio entre vecinos). */
+  order: z.number(),
+});
+export type ReorderProductDto = z.infer<typeof ReorderProductSchema>;

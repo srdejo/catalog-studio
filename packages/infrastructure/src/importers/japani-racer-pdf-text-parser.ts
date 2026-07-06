@@ -12,9 +12,11 @@ function classify(text: string): ItemKind {
   const trimmed = text.trim();
   if (PRICE_REGEX.test(trimmed)) return 'price';
   if (UNIT_WORDS.has(trimmed.toUpperCase())) return 'unit';
-  // Un código no tiene espacios (es un solo token); el nombre del producto
-  // siempre es una frase con espacios en este catálogo.
-  if (!/\s/.test(trimmed) && trimmed.length <= 14) return 'code';
+  // Un código no tiene espacios (es un solo token) y siempre incluye al
+  // menos un dígito (p. ej. "AJR47"); esto evita confundir con un código
+  // fragmentos de nombre sin espacio pero solo con letras, como "TAPON-PAR"
+  // cuando el nombre del producto se ajusta (word-wrap) en varias líneas.
+  if (!/\s/.test(trimmed) && trimmed.length <= 14 && /\d/.test(trimmed)) return 'code';
   return 'name';
 }
 

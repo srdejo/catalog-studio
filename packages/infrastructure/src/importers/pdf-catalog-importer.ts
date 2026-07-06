@@ -4,6 +4,7 @@ import type { CatalogImporter, ImportedCatalog } from '@catalog-studio/domain';
 import { extractPdfPagesText } from './pdf-text-extractor';
 import { extractPageImages } from './pdf-page-images';
 import { hashImageBuffer } from './pdf-image-extractor';
+import { optimizeProductPhoto } from './image-optimizer';
 import { GenericPdfTextParser } from './generic-pdf-text-parser';
 import { JapaniRacerPdfTextParser } from './japani-racer-pdf-text-parser';
 import type { PdfTextParser, ParsedProductCandidate } from './pdf-text-parser';
@@ -101,8 +102,12 @@ export class PdfCatalogImporter implements CatalogImporter {
             await fs.mkdir(this.imagesDir, { recursive: true });
             ensuredDir = true;
           }
-          const fileName = `import-${hashImageBuffer(match.bytes)}.jpg`;
-          await fs.writeFile(path.join(this.imagesDir, fileName), match.bytes);
+          // Se optimiza al tamaño real de la tarjeta antes de guardar — la
+          // foto original del proveedor viene a resolución completa (~80KB),
+          // muchas veces más grande de lo que se necesita para imprimir.
+          const optimized = await optimizeProductPhoto(match.bytes);
+          const fileName = `import-${hashImageBuffer(optimized)}.jpg`;
+          await fs.writeFile(path.join(this.imagesDir, fileName), optimized);
           imagePath = fileName;
         }
       }

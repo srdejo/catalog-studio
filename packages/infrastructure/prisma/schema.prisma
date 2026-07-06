@@ -31,6 +31,9 @@ model Product {
   detailPrice  Float?
   cost         Float
   stock        Int       @default(0)
+  /// Orden manual (fraccionario, no secuencial): reordenar un producto solo
+  /// reescribe su propio valor (promedio entre vecinos), nunca el resto.
+  order        Float     @default(0)
   active       Boolean   @default(true)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

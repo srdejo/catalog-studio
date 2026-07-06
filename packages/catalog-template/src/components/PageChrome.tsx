@@ -1,17 +1,19 @@
 interface PageHeaderProps {
   title: string;
-  companyName: string;
   headerImageDataUri: string | null;
 }
 
-export function PageHeader({ title, companyName, headerImageDataUri }: PageHeaderProps) {
+/**
+ * Solo el banner de marca, pegado al borde superior — sin la fila de texto
+ * (categoría/empresa) con línea separadora que quedaba debajo, misma idea
+ * que se aplicó al footer. El título de la sección queda como insignia
+ * discreta sobre la esquina del banner.
+ */
+export function PageHeader({ title, headerImageDataUri }: PageHeaderProps) {
   return (
     <header className="page-header">
       {headerImageDataUri && <img src={headerImageDataUri} alt="" className="page-header-banner" />}
-      <div className="page-header-text">
-        <span className="page-header-title">{title}</span>
-        <span className="page-header-company">{companyName}</span>
-      </div>
+      <span className="page-header-title">{title}</span>
     </header>
   );
 }

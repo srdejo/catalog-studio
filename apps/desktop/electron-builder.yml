@@ -1,5 +1,9 @@
 appId: com.catalogstudio.app
 productName: Catalog Studio
+# Fijo explícitamente la versión: electron-builder no resuelve node_modules
+# hacia arriba en un workspace npm, así que no encuentra el electron hospedado
+# en la raíz del monorepo y falla si aquí queda como rango ("^33.2.0").
+electronVersion: 33.4.11
 directories:
   output: release
   buildResources: build

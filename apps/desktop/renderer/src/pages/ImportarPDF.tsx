@@ -152,6 +152,29 @@ export function ImportarPDF() {
 
             {step === 'review' && (
               <>
+                {preview.errors.length > 0 && (
+                  <details className="mb-4 rounded-lg border border-red bg-[color-mix(in_srgb,var(--red)_8%,transparent)]" open>
+                    <summary className="cursor-pointer px-4 py-2 text-sm font-semibold text-red">
+                      {preview.errors.length} {preview.errors.length === 1 ? 'error' : 'errores'} durante la extracción
+                    </summary>
+                    <ul className="max-h-56 overflow-y-auto border-t border-red/30 px-4 py-2 text-xs">
+                      {preview.errors.map((err, idx) => (
+                        <li key={idx} className="border-b border-red/10 py-1.5 last:border-b-0">
+                          <span className="font-semibold text-red">
+                            {err.page !== null ? `Página ${err.page}: ` : ''}
+                          </span>
+                          <span className="text-text-2">{err.message}</span>
+                          {err.raw && (
+                            <div className="mt-0.5 truncate font-mono text-[11px] text-text-3" title={err.raw}>
+                              {err.raw}
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+
                 <div className="max-h-96 overflow-y-auto rounded-lg border border-border">
                   <table className="w-full text-left text-sm">
                     <thead className="sticky top-0 bg-surface-3 text-xs uppercase text-text-3">

@@ -18,6 +18,8 @@ interface PendingImport {
   catalog: ImportedCatalog;
 }
 
+const ORDER_STEP = 1000;
+
 /**
  * Orquesta el flujo de importación completo: analizar (sin tocar la base de
  * datos) y confirmar (aplicar los cambios). El resultado de `analyze` se
@@ -90,6 +92,9 @@ export class CatalogImportService {
     const codesToApply = input.codes ? new Set(input.codes) : null;
     let createdCount = 0;
     let updatedCount = 0;
+    // Los productos nuevos se agregan al final, en el mismo orden en que
+    // aparecen en el PDF (`pending.catalog.products` ya viene en ese orden).
+    let nextOrder = (await this.products.findMaxOrder()) + ORDER_STEP;
 
     for (const imported of pending.catalog.products) {
       if (codesToApply && !codesToApply.has(imported.code)) continue;
@@ -114,8 +119,10 @@ export class CatalogImportService {
           detailPrice: null,
           cost: 0,
           stock: 0,
+          order: nextOrder,
           active: true,
         });
+        nextOrder += ORDER_STEP;
         createdCount++;
       } else {
         // Solo el patch (campos del proveedor); stock/estado/categoría del

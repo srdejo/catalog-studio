@@ -8,11 +8,13 @@ import {
   type UpdateSettingsDto,
   type ConfirmImportDto,
   type GeneratePdfDto,
+  type ReorderProductDto,
 } from '@catalog-studio/shared';
 
 const api = {
   app: {
     healthCheck: () => ipcRenderer.invoke(IpcChannel.app.healthCheck),
+    imagesBaseUrl: (): Promise<string> => ipcRenderer.invoke(IpcChannel.app.imagesBaseUrl),
   },
   category: {
     list: () => ipcRenderer.invoke(IpcChannel.category.list),
@@ -27,6 +29,8 @@ const api = {
     update: (id: string, input: UpdateProductDto) =>
       ipcRenderer.invoke(IpcChannel.product.update, id, input),
     delete: (id: string) => ipcRenderer.invoke(IpcChannel.product.delete, id),
+    reorder: (input: ReorderProductDto) => ipcRenderer.invoke(IpcChannel.product.reorder, input),
+    selectImage: (): Promise<string | null> => ipcRenderer.invoke(IpcChannel.product.selectImage),
   },
   settings: {
     get: () => ipcRenderer.invoke(IpcChannel.settings.get),

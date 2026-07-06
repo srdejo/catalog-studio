@@ -16,9 +16,9 @@ interface NavItem {
 }
 
 const generalItems: NavItem[] = [
-  { label: 'Dashboard', icon: <LayoutGrid size={18} /> },
-  { label: 'Productos', icon: <Package size={18} /> },
-  { label: 'Categorías', icon: <Tag size={18} /> },
+  { label: 'Dashboard', to: '/dashboard', icon: <LayoutGrid size={18} /> },
+  { label: 'Productos', to: '/productos', icon: <Package size={18} /> },
+  { label: 'Categorías', to: '/categorias', icon: <Tag size={18} /> },
 ];
 
 const dataItems: NavItem[] = [

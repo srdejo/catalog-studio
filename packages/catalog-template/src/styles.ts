@@ -52,10 +52,9 @@ export const catalogStyles = `
    */
   .index-page, .products-page { display: flex; flex-direction: column; padding: 0; background: #E5E5E5; }
 
+  .page-header { position: relative; }
   .page-header-banner { display: block; width: 100%; height: auto; }
-  .page-header-text { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 16mm; border-bottom: 2px solid #0A0A0B; }
-  .page-header-title { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
-  .page-header-company { font-size: 10.5px; color: #9CA3AF; font-weight: 600; }
+  .page-header-title { position: absolute; left: 16mm; bottom: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; color: #9CA3AF; }
 
   .page-body { flex: 1; padding: 12px 16mm; overflow: hidden; }
 

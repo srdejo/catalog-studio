@@ -14,6 +14,7 @@ export function toProductDto(product: Product): ProductDto {
     detailPrice: product.detailPrice,
     cost: product.cost,
     stock: product.stock,
+    order: product.order,
     active: product.active,
     createdAt: product.createdAt.toISOString(),
     updatedAt: product.updatedAt.toISOString(),

@@ -14,7 +14,8 @@
     "@catalog-studio/domain": "*",
     "@prisma/client": "^5.20.0",
     "pdfjs-dist": "^4.7.76",
-    "playwright": "^1.48.2"
+    "playwright": "^1.48.2",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "prisma": "^5.20.0"

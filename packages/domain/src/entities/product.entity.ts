@@ -11,6 +11,8 @@ export class Product {
     public detailPrice: number | null,
     public cost: number,
     public stock: number,
+    /** Orden manual fraccionario — reordenar reescribe solo esta fila. */
+    public order: number,
     public active: boolean,
     public readonly createdAt: Date,
     public updatedAt: Date,

@@ -5,6 +5,7 @@
 export const IpcChannel = {
   app: {
     healthCheck: 'app:health-check',
+    imagesBaseUrl: 'app:images-base-url',
   },
   category: {
     list: 'category:list',
@@ -17,6 +18,8 @@ export const IpcChannel = {
     create: 'product:create',
     update: 'product:update',
     delete: 'product:delete',
+    reorder: 'product:reorder',
+    selectImage: 'product:select-image',
   },
   settings: {
     get: 'settings:get',

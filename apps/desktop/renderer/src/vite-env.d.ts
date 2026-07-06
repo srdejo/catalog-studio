@@ -14,6 +14,7 @@ import type {
   ConfirmImportResultDto,
   GeneratePdfDto,
   GeneratePdfResultDto,
+  ReorderProductDto,
 } from '@catalog-studio/shared';
 
 interface HealthCheckResult {
@@ -24,6 +25,7 @@ interface HealthCheckResult {
 interface CatalogStudioApi {
   app: {
     healthCheck: () => Promise<HealthCheckResult>;
+    imagesBaseUrl: () => Promise<string>;
   };
   category: {
     list: () => Promise<CategoryDto[]>;
@@ -36,6 +38,8 @@ interface CatalogStudioApi {
     create: (input: CreateProductDto) => Promise<ProductDto>;
     update: (id: string, input: UpdateProductDto) => Promise<ProductDto>;
     delete: (id: string) => Promise<void>;
+    reorder: (input: ReorderProductDto) => Promise<ProductDto>;
+    selectImage: () => Promise<string | null>;
   };
   settings: {
     get: () => Promise<SettingsDto>;

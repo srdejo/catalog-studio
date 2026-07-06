@@ -1,6 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol, net } from 'electron';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   PrismaCategoryRepository,
   PrismaProductRepository,
@@ -25,6 +25,16 @@ import { registerCatalogImportIpc } from './ipc/catalog-import.ipc';
 import { registerCatalogGenerationIpc } from './ipc/catalog-generation.ipc';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const IMAGE_PROTOCOL = 'app-image';
+
+// Debe registrarse antes de `app.whenReady()`. Un esquema privilegiado permite
+// que <img src="app-image://..."> cargue igual en dev (renderer servido por
+// http://localhost) y en producción (renderer servido por file://) — a
+// diferencia de file://, que Chromium bloquea cuando la página viene de http.
+protocol.registerSchemesAsPrivileged([
+  { scheme: IMAGE_PROTOCOL, privileges: { standard: true, secure: true, supportFetchAPI: true } },
+]);
 
 // Repo root: apps/desktop/dist-electron/main -> ../../../ = raíz del monorepo,
 // consistente con el `file:../../data/catalog.db` de Prisma.
@@ -77,9 +87,9 @@ const generateCatalogService = new GenerateCatalogService(
   new PlaywrightPdfRenderer(),
 );
 
-registerHealthIpc(ipcMain);
+registerHealthIpc(ipcMain, `${IMAGE_PROTOCOL}://images`);
 registerCategoryIpc(ipcMain, categoryService);
-registerProductIpc(ipcMain, productService);
+registerProductIpc(ipcMain, productService, IMAGES_DIR, () => mainWindow);
 registerSettingsIpc(ipcMain, settingsService);
 registerCatalogImportIpc(ipcMain, catalogImportService, () => mainWindow);
 registerCatalogGenerationIpc(ipcMain, generateCatalogService, () => mainWindow);
@@ -90,6 +100,11 @@ app.whenReady().then(async () => {
   // grande) pueden chocar con lecturas concurrentes y SQLite falla de
   // inmediato en vez de esperar.
   await ensureDatabaseReady();
+
+  protocol.handle(IMAGE_PROTOCOL, (request) => {
+    const fileName = decodeURIComponent(new URL(request.url).pathname.replace(/^\/+/, ''));
+    return net.fetch(pathToFileURL(path.join(IMAGES_DIR, fileName)).toString());
+  });
 
   createWindow();
 

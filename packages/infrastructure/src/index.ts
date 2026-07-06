@@ -11,3 +11,5 @@ export * from './importers/japani-racer-pdf-text-parser';
 export * from './rendering/playwright-pdf-renderer';
 export * from './rendering/filesystem-image-store';
 export * from './importers/pdf-catalog-importer';
+export * from './importers/image-optimizer';
+export * from './rendering/product-image-uploader';

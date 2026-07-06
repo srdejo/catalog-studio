@@ -23,7 +23,6 @@ export function IndexPage({ data, pageNumber }: { data: CatalogTemplateData; pag
     <section className="page index-page" style={{ pageBreakBefore: 'always' }}>
       <PageHeader
         title="Índice"
-        companyName={data.settings.companyName}
         headerImageDataUri={data.headerImageDataUri}
       />
       <div className="page-body">
