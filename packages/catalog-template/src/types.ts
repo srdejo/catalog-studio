@@ -1,4 +1,4 @@
-import type { CategoryDto, ProductDto, SettingsDto } from '@catalog-studio/shared';
+import type { CategoryDto, PriceKey, ProductDto, SettingsDto } from '@catalog-studio/shared';
 
 /**
  * Producto listo para maquetar: igual a `ProductDto` pero con la imagen ya
@@ -28,4 +28,6 @@ export interface CatalogTemplateData {
   year: string;
   categories: CategoryDto[];
   products: ProductForTemplate[];
+  /** Precios a mostrar en cada tarjeta de producto. Si se omite, se muestran los 3. */
+  visiblePrices?: PriceKey[];
 }

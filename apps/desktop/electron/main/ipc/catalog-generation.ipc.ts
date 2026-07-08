@@ -27,6 +27,7 @@ export function registerCatalogGenerationIpc(
         year: input.year,
         outputPath: result.filePath,
         productIds: input.productIds,
+        visiblePrices: input.visiblePrices,
       });
       return { canceled: false, filePath: result.filePath };
     },

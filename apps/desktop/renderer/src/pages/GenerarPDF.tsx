@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { CategoryDto, ProductDto, SettingsDto } from '@catalog-studio/shared';
+import type { CategoryDto, PriceKey, ProductDto, SettingsDto } from '@catalog-studio/shared';
 import { Spinner } from '../components/Spinner';
+
+const PRICE_OPTIONS: { key: PriceKey; label: string }[] = [
+  { key: 'premiumPrice', label: 'Premium' },
+  { key: 'price', label: 'Mayorista' },
+  { key: 'detailPrice', label: 'Detalle' },
+];
 
 const MONTHS = [
   'Enero',
@@ -31,6 +37,9 @@ export function GenerarPDF() {
   const [products, setProducts] = useState<ProductDto[]>([]);
   const [settings, setSettings] = useState<SettingsDto | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [visiblePrices, setVisiblePrices] = useState<Set<PriceKey>>(
+    new Set(PRICE_OPTIONS.map((p) => p.key)),
+  );
   const [generation, setGeneration] = useState<GenerationState>({ status: 'idle' });
 
   useEffect(() => {
@@ -65,6 +74,15 @@ export function GenerarPDF() {
     setSelected(new Set());
   }
 
+  function togglePrice(key: PriceKey) {
+    setVisiblePrices((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
   async function handleGenerate() {
     setGeneration({ status: 'generating' });
     try {
@@ -72,6 +90,7 @@ export function GenerarPDF() {
         month,
         year,
         productIds: [...selected],
+        visiblePrices: [...visiblePrices],
       });
       if (result.canceled || !result.filePath) {
         setGeneration({ status: 'idle' });
@@ -121,6 +140,25 @@ export function GenerarPDF() {
           <div className="rounded-lg border border-border bg-surface-2 p-3 text-xs text-text-2">
             {activeProducts.length} productos activos en {activeCategories.length} categorías.
           </div>
+
+          <div className="mb-2 mt-4 text-[11px] font-semibold uppercase tracking-wide text-text-3">
+            Precios a mostrar
+          </div>
+          <div className="flex flex-col gap-2">
+            {PRICE_OPTIONS.map((option) => (
+              <label
+                key={option.key}
+                className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm"
+              >
+                <input
+                  type="checkbox"
+                  checked={visiblePrices.has(option.key)}
+                  onChange={() => togglePrice(option.key)}
+                />
+                <span className="font-medium">{option.label}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="border-t border-border bg-surface-3 px-5 py-3.5">
@@ -132,7 +170,9 @@ export function GenerarPDF() {
           </div>
           <button
             onClick={handleGenerate}
-            disabled={generation.status === 'generating' || selected.size === 0}
+            disabled={
+              generation.status === 'generating' || selected.size === 0 || visiblePrices.size === 0
+            }
             className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-accent text-sm font-bold text-on-accent disabled:opacity-60"
           >
             {generation.status === 'generating' && <Spinner className="h-4 w-4" />}

@@ -10,6 +10,7 @@ import {
   CATALOG_PAGE_SIZE_MM,
   type ProductForTemplate,
 } from '@catalog-studio/catalog-template';
+import type { PriceKey } from '@catalog-studio/shared';
 import { toCategoryDto } from '../mappers/category.mapper';
 import { toProductDto } from '../mappers/product.mapper';
 import { toSettingsDto } from '../mappers/settings.mapper';
@@ -29,6 +30,8 @@ export interface GenerateCatalogInput {
   outputPath: string;
   /** Si se omite, se incluyen todos los productos activos. */
   productIds?: string[];
+  /** Si se omite, se muestran los 3 precios. */
+  visiblePrices?: PriceKey[];
 }
 
 /**
@@ -83,6 +86,7 @@ export class GenerateCatalogService {
       year: input.year,
       categories: allCategories.map(toCategoryDto),
       products: productsForTemplate,
+      visiblePrices: input.visiblePrices,
     });
 
     await this.pdfRenderer.renderHtmlToPdf(html, input.outputPath, {
