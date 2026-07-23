@@ -16,6 +16,12 @@ data/
 # Prisma
 packages/infrastructure/prisma/dev.db*
 
+# Copia del navegador de Playwright generada por
+# apps/desktop/scripts/copy-playwright-browser.mjs antes de empaquetar
+# (ver apps/desktop/electron-builder.yml) — no es código fuente, se
+# regenera desde el caché local de Playwright en cada build.
+apps/desktop/build/ms-playwright/
+
 .env
 **/.env
 .DS_Store

@@ -54,6 +54,13 @@ if (app.isPackaged) {
   // la app ese .env no viaja con el paquete y la variable queda vacía.
   process.env.DATABASE_URL = `file:${databasePath}`;
 
+  // Playwright resuelve el navegador por defecto en el caché global de la
+  // máquina (%LOCALAPPDATA%\ms-playwright), que solo existe si `npm install`
+  // corrió ahí — nunca en la máquina de un usuario final. El instalador
+  // empaqueta el navegador en resources/ms-playwright (ver electron-builder.yml),
+  // así que hay que apuntar Playwright ahí antes de lanzarlo.
+  process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(process.resourcesPath, 'ms-playwright');
+
   if (!fs.existsSync(databasePath)) {
     // Primer arranque: no hay migraciones disponibles en producción (el CLI
     // de Prisma es una devDependency), así que se parte de una plantilla ya

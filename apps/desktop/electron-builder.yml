@@ -30,6 +30,16 @@ extraResources:
   # desactivado, "app" es la carpeta donde vive el código fuente empaquetado).
   - from: ../../node_modules/.prisma
     to: app/node_modules/.prisma
+  # Playwright normalmente descarga el navegador en el caché global de la
+  # máquina de desarrollo (%LOCALAPPDATA%\ms-playwright) vía postinstall de
+  # npm. Un usuario final que instala el .exe empaquetado no tiene npm ni
+  # internet garantizado, así que hay que llevar el navegador dentro del
+  # instalador. El script "prebuild" (ver package.json) copia el navegador
+  # del caché local a build/ms-playwright antes de este paso. En tiempo de
+  # ejecución, `PLAYWRIGHT_BROWSERS_PATH` (electron/main/index.ts) apunta a
+  # la copia empaquetada cuando la app está instalada.
+  - from: build/ms-playwright
+    to: ms-playwright
 win:
   target: nsis
 nsis:

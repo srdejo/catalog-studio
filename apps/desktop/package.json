@@ -1,10 +1,11 @@
 {
   "name": "@catalog-studio/desktop",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "main": "dist-electron/main/index.js",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/copy-playwright-browser.mjs",
     "build": "tsc --noEmit -p renderer/tsconfig.json && vite build && electron-builder"
   },
   "dependencies": {

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateProductSchema, type CategoryDto, type ProductDto } from '@catalog-studio/shared';
 import { z } from 'zod';
 import { ActiveSwitch } from './ActiveSwitch';
+import { CurrencyInput } from './CurrencyInput';
 
 type FormValues = z.infer<typeof CreateProductSchema>;
 
@@ -16,11 +17,13 @@ interface ProductFormModalProps {
 
 export function ProductFormModal({ product, categories, onClose, onSaved }: ProductFormModalProps) {
   const [imagesBaseUrl, setImagesBaseUrl] = useState('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(CreateProductSchema),
@@ -56,12 +59,17 @@ export function ProductFormModal({ product, categories, onClose, onSaved }: Prod
   }, [onClose]);
 
   async function onSubmit(values: FormValues) {
-    if (product) {
-      await window.api.product.update(product.id, values);
-    } else {
-      await window.api.product.create(values);
+    setSubmitError(null);
+    try {
+      if (product) {
+        await window.api.product.update(product.id, values);
+      } else {
+        await window.api.product.create(values);
+      }
+      onSaved();
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'No se pudo guardar el producto.');
     }
-    onSaved();
   }
 
   async function handlePickImage() {
@@ -132,30 +140,45 @@ export function ProductFormModal({ product, categories, onClose, onSaved }: Prod
           <div className="grid grid-cols-3 gap-3">
             <label className="flex flex-col gap-1 text-xs font-semibold text-text-2">
               Premium
-              <input
-                type="number"
-                step="0.01"
-                {...register('premiumPrice', { valueAsNumber: true })}
-                className="h-9 rounded-lg border border-border bg-surface-2 px-2 text-sm font-mono"
+              <Controller
+                control={control}
+                name="premiumPrice"
+                render={({ field }) => (
+                  <CurrencyInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    className="h-9 rounded-lg border border-border bg-surface-2 px-2 text-sm font-mono"
+                  />
+                )}
               />
             </label>
             <label className="flex flex-col gap-1 text-xs font-semibold text-text-2">
               Mayorista
-              <input
-                type="number"
-                step="0.01"
-                {...register('price', { valueAsNumber: true })}
-                className="h-9 rounded-lg border border-border bg-surface-2 px-2 text-sm font-mono"
+              <Controller
+                control={control}
+                name="price"
+                render={({ field }) => (
+                  <CurrencyInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    className="h-9 rounded-lg border border-border bg-surface-2 px-2 text-sm font-mono"
+                  />
+                )}
               />
             </label>
             <label className="flex flex-col gap-1 text-xs font-semibold text-text-2">
               Detalle
-              <input
-                type="number"
-                step="0.01"
-                {...register('detailPrice', { valueAsNumber: true })}
-                placeholder="= mayorista"
-                className="h-9 rounded-lg border border-border bg-surface-2 px-2 text-sm font-mono"
+              <Controller
+                control={control}
+                name="detailPrice"
+                render={({ field }) => (
+                  <CurrencyInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="= mayorista"
+                    className="h-9 rounded-lg border border-border bg-surface-2 px-2 text-sm font-mono"
+                  />
+                )}
               />
             </label>
           </div>
@@ -164,6 +187,8 @@ export function ProductFormModal({ product, categories, onClose, onSaved }: Prod
             <ActiveSwitch value={watch('active') ?? true} onToggle={(next) => setValue('active', next, { shouldDirty: true })} />
             Activo
           </div>
+
+          {submitError && <p className="text-xs font-semibold text-red">{submitError}</p>}
 
           <div className="mt-2 flex justify-end gap-2">
             <button

@@ -22,13 +22,16 @@ export class ProductService {
 
   async create(input: CreateProductDto): Promise<ProductDto> {
     const data = CreateProductSchema.parse(input);
+    if (await this.products.findByCode(data.code)) {
+      throw new Error(`Ya existe un producto con el código "${data.code}".`);
+    }
     const order = data.order ?? (await this.products.findMaxOrder()) + ORDER_STEP;
     const created = await this.products.create({
       code: data.code,
       name: data.name,
       description: data.description ?? null,
       imagePath: data.imagePath ?? null,
-      categoryId: data.categoryId ?? null,
+      categoryId: data.categoryId ? data.categoryId : null,
       price: data.price,
       premiumPrice: data.premiumPrice,
       detailPrice: data.detailPrice ?? null,
@@ -42,7 +45,16 @@ export class ProductService {
 
   async update(id: string, input: UpdateProductDto): Promise<ProductDto> {
     const data = UpdateProductSchema.parse(input);
-    const updated = await this.products.update(id, data);
+    if (data.code) {
+      const existing = await this.products.findByCode(data.code);
+      if (existing && existing.id !== id) {
+        throw new Error(`Ya existe un producto con el código "${data.code}".`);
+      }
+    }
+    const updated = await this.products.update(id, {
+      ...data,
+      categoryId: 'categoryId' in data ? (data.categoryId ? data.categoryId : null) : undefined,
+    });
     return toProductDto(updated);
   }
 
